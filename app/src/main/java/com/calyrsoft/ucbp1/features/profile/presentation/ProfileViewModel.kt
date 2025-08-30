@@ -3,13 +3,15 @@ package com.calyrsoft.ucbp1.features.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.calyrsoft.ucbp1.features.dollar.domain.usecase.GetDollarUseCase
+import com.calyrsoft.ucbp1.features.profile.domain.usecase.GetProfileUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    private val getDollarUseCase: GetDollarUseCase
+    private val getDollarUseCase: GetDollarUseCase,
+    private val getProfileUseCase: GetProfileUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -22,16 +24,23 @@ class ProfileViewModel(
 
     fun loadProfileData() {
         viewModelScope.launch {
-            // Simulamos datos de perfil
-            _state.value = _state.value.copy(
-                isLoading = false,
-                userName = "Usuario Demo",
-                userEmail = "usuario@ejemplo.com",
-                avatarUrl = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&q=80"
-            )
+            getProfileUseCase().collect { result ->
+                result.onSuccess { profile ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        userName = profile.name,
+                        userEmail = profile.email,
+                        avatarUrl = profile.avatarUrl
+                    )
+                }.onFailure { e ->
+                    _state.value = _state.value.copy(
+                        error = e.message ?: "Error al cargar perfil",
+                        isLoading = false
+                    )
+                }
+            }
         }
     }
-
     fun loadDollarValue() {
         viewModelScope.launch {
             getDollarUseCase().collect { result ->
