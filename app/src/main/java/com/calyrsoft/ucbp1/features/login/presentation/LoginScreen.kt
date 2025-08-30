@@ -64,7 +64,7 @@ fun LoginScreen(
             Text(
                 text = stringResource(R.string.inicio_sesion),
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 32.dp)
+                modifier = Modifier.padding(bottom = 35.dp)
             )
 
             OutlinedTextField(

@@ -2,7 +2,6 @@ package com.calyrsoft.ucbp1.features.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.calyrsoft.ucbp1.features.dollar.domain.usecase.GetDollarUseCase
 import com.calyrsoft.ucbp1.features.profile.domain.usecase.GetProfileUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    private val getDollarUseCase: GetDollarUseCase,
+
     private val getProfileUseCase: GetProfileUseCase
 ) : ViewModel() {
 
@@ -19,9 +18,8 @@ class ProfileViewModel(
 
     init {
         loadProfileData()
-        loadDollarValue()
-    }
 
+    }
     fun loadProfileData() {
         viewModelScope.launch {
             getProfileUseCase().collect { result ->
@@ -41,22 +39,7 @@ class ProfileViewModel(
             }
         }
     }
-    fun loadDollarValue() {
-        viewModelScope.launch {
-            getDollarUseCase().collect { result ->
-                result.onSuccess { dollarResponse ->
-                    _state.value = _state.value.copy(
-                        dollarValue = dollarResponse.value
-                    )
-                }.onFailure { e ->
-                    // Puedes manejar el error aquí si quieres
-                    _state.value = _state.value.copy(
-                        error = e.message ?: "Error al obtener el dólar"
-                    )
-                }
-            }
-        }
-    }
+
 }
 
 data class ProfileState(

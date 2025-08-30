@@ -84,42 +84,24 @@ fun ProfileScreen(
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
+               // En ProfileScreen.kt, agrega este botón después de la información del perfil:
 
-                // SECCIÓN DEL DÓLAR
-                state.dollarValue?.let { dollarValue ->
-                    Card(
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "💵 Valor del dólar",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Bs. $dollarValue",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = "Tipo de cambio actual",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                            )
-                        }
+
+               //  Botón para ir a la pantalla del dólar
+                Button(
+                    onClick = {
+                        navController.navigate(Screen.Dollar.route)
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                ) {
+                    Text("Ver Tipo de Cambio")
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "Esta es la pantalla de perfil. Aquí podrás ver y gestionar tu información personal.",
                     style = MaterialTheme.typography.bodyMedium
                 )
-
                 Spacer(modifier = Modifier.height(48.dp))
 
                 Button(
