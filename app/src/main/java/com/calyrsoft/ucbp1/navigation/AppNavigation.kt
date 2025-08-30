@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.calyrsoft.ucbp1.features.dollar.presentation.DollarScreen
 import com.calyrsoft.ucbp1.features.login.presentation.LoginScreen
 import com.calyrsoft.ucbp1.features.profile.presentation.ProfileScreen
 
@@ -28,6 +29,9 @@ fun AppNavigation() {
         }
         composable(Screen.Profile.route) {
             ProfileScreen(navController = navController)
+        }
+        composable(Screen.Dollar.route) {
+            DollarScreen(navController = navController)
         }
     }
 }
