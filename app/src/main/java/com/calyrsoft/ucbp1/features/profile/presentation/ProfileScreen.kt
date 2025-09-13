@@ -108,7 +108,7 @@ fun ProfileScreen(
                         navController.navigate(Screen.Github.route)
                     }
                 ) {
-                    Text("Ir a búsqueda de GitHub")
+                    Text("GitHub")
                 }
 
                 Spacer(modifier = Modifier.height(48.dp))
