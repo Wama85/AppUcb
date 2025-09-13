@@ -114,10 +114,17 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(48.dp))
                 Button(
                     onClick = {
+
                         navController.navigate(Screen.Movie.route)
                     }
                 ) {
                     Text("Ir a Movies")
+
+                        navController.navigate(Screen.Github.route)
+                    }
+                ) {
+                    Text("Ir a Challenge 2")
+
                 }
 
                 Spacer(modifier = Modifier.height(48.dp))

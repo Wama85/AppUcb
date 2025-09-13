@@ -38,8 +38,10 @@ fun AppNavigation() {
         composable(Screen.Github.route) {
             GithubScreen(navController)
         }
+
         composable(Screen.Movie.route) {
             MoviesScreen(navController = navController)
         }
+
     }
 }

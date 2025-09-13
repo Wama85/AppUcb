@@ -56,6 +56,7 @@ val appModule = module {
         get<Retrofit>().create(GithubService::class.java)
     }
 
+
     // MovieDB Service (base URL diferente)
     single<MovieService> {
         get<Retrofit>().newBuilder()
@@ -64,26 +65,33 @@ val appModule = module {
             .create(MovieService::class.java)
     }
 
+
     // Repositories
     single<LoginRepository> { LoginRepositoryImpl() }
     single<DollarRepository> { DollarRepositoryImpl() }
     single<ProfileRepository> { ProfileRepositoryImpl() }
     single { GithubRemoteDataSource(get()) }
     single<IGithubRepository> { GithubRepository(get()) }
+
     single { MovieRemoteDataSource(get()) }
     single<MovieRepository> { MovieRepositoryImpl(get()) }
+
 
     // UseCases
     factory { LoginUseCase(get()) }
     factory { GetDollarUseCase(get()) }
     factory { GetProfileUseCase(get()) }
     factory { FindByNickNameUseCase(get()) }
+
     factory { GetPopularMoviesUseCase(get()) }
+
 
     // ViewModels
     viewModel { LoginViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { DollarViewModel(get()) }
     viewModel { GithubViewModel(get(),get ()) }
+
     viewModel { MoviesViewModel(get()) }
+
 }
