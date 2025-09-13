@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,6 +69,9 @@ dependencies {
     implementation("io.sentry:sentry-android:7.14.0")
     implementation("androidx.compose.material3:material3:1.2.0")
     implementation("androidx.compose.material:material-icons-extended:1.5.0")
+    implementation(libs.converter.gson)
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
 }
 
 sentry {
