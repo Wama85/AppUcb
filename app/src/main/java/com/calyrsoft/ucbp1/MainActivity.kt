@@ -8,11 +8,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.calyrsoft.ucbp1.navigation.AppNavigation
+import com.google.firebase.FirebaseApp
 import io.sentry.Sentry
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
     // waiting for view to draw to better represent a captured error with a screenshot
     findViewById<android.view.View>(android.R.id.content).viewTreeObserver.addOnGlobalLayoutListener {
       try {
