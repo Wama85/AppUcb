@@ -2,41 +2,56 @@ package com.calyrsoft.ucbp1.features.dollar.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.calyrsoft.ucbp1.features.dollar.domain.usecase.GetDollarUseCase
+import com.calyrsoft.ucbp1.features.dollar.data.datasource.DollarLocalDataSource
+import com.calyrsoft.ucbp1.features.dollar.domain.model.DollarModel
+import com.calyrsoft.ucbp1.features.dollar.domain.usecase.FetchDollarUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-
 class DollarViewModel(
-    private val getDollarUseCase: GetDollarUseCase
-) : ViewModel() {
+    val fetchDollarUseCase: FetchDollarUseCase,
+    private val localDataSource: DollarLocalDataSource
+): ViewModel() {
 
-    private val _state = MutableStateFlow<DollarState>(DollarState.Loading)
-    val state: StateFlow<DollarState> = _state.asStateFlow()
+    sealed class DollarUIState {
+        object Loading : DollarUIState()
+        class Error(val message: String) : DollarUIState()
+        class Success(val data: DollarModel, val history: List<DollarModel>) : DollarUIState()
+    }
 
-    fun loadDollarValue() {
+    init {
+        getDollar()
+        loadHistory()
+    }
+
+    private val _uiState = MutableStateFlow<DollarUIState>(DollarUIState.Loading)
+    val uiState: StateFlow<DollarUIState> = _uiState.asStateFlow()
+
+    fun getDollar() {
         viewModelScope.launch {
-            _state.value = DollarState.Loading
-
-            getDollarUseCase().collect { result ->
-                result.onSuccess { dollar ->
-                    _state.value = DollarState.Loaded(
-                        value = dollar.value,
-                        lastUpdated = dollar.lastUpdated
-                    )
-                }.onFailure { e ->
-                    _state.value = DollarState.Error(
-                        message = e.message ?: "Error al cargar el tipo de cambio"
-                    )
+            fetchDollarUseCase()
+                .catch { e ->
+                    _uiState.value = DollarUIState.Error("Error: ${e.message}")
                 }
+                .collect { dollar ->
+                    // Mantener el historial actual mientras se actualizan los datos en tiempo real
+                    val currentHistory = (_uiState.value as? DollarUIState.Success)?.history ?: emptyList()
+                    _uiState.value = DollarUIState.Success(dollar, currentHistory)
+                }
+        }
+    }
+    fun loadHistory() {
+        viewModelScope.launch {
+            try {
+                val history = localDataSource.getAllOrderedByDate()
+                val currentData = (_uiState.value as? DollarUIState.Success)?.data ?: DollarModel("0", "0")
+                _uiState.value = DollarUIState.Success(currentData, history)
+            } catch (e: Exception) {
+                // No cambiar el estado si falla la carga del histórico
             }
         }
     }
-}
-
-sealed class DollarState {
-    object Loading : DollarState()
-    data class Loaded(val value: Float, val lastUpdated: String) : DollarState()
-    data class Error(val message: String) : DollarState()
 }

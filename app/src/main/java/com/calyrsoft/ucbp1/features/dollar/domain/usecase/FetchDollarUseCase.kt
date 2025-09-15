@@ -1,13 +1,14 @@
 package com.calyrsoft.ucbp1.features.dollar.domain.usecase
 
-import com.calyrsoft.ucbp1.features.dollar.domain.model.Dollar
-import com.calyrsoft.ucbp1.features.dollar.domain.repository.DollarRepository
+import com.calyrsoft.ucbp1.features.dollar.domain.model.DollarModel
+import com.calyrsoft.ucbp1.features.dollar.domain.repository.IDollarRepository
 import kotlinx.coroutines.flow.Flow
 
-class GetDollarUseCase(
-    private val dollarRepository: DollarRepository
+class FetchDollarUseCase(
+    val repository: IDollarRepository
 ) {
-    operator fun invoke(): Flow<Result<Dollar>> {
-        return dollarRepository.getDollarValue()
+
+    suspend operator fun invoke(): Flow<DollarModel> {
+        return repository.getDollar()
     }
 }

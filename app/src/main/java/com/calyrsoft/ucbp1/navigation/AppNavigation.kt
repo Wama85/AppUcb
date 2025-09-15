@@ -35,6 +35,7 @@ fun AppNavigation() {
         composable(Screen.Dollar.route) {
             DollarScreen(navController = navController)
         }
+
         composable(Screen.Github.route) {
             GithubScreen(navController)
         }

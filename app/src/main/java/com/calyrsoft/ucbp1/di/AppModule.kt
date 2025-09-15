@@ -1,8 +1,11 @@
 package com.calyrsoft.ucbp1.di
 
-import com.calyrsoft.ucbp1.features.dollar.data.DollarRepositoryImpl
-import com.calyrsoft.ucbp1.features.dollar.domain.repository.DollarRepository
-import com.calyrsoft.ucbp1.features.dollar.domain.usecase.GetDollarUseCase
+import com.calyrsoft.ucbp1.features.dollar.data.database.AppRoomDatabase
+import com.calyrsoft.ucbp1.features.dollar.data.datasource.DollarLocalDataSource
+import com.calyrsoft.ucbp1.features.dollar.data.repository.DollarRepositoryImpl
+import com.calyrsoft.ucbp1.features.dollar.domain.repository.IDollarRepository
+import com.calyrsoft.ucbp1.features.dollar.domain.usecase.FetchDollarUseCase
+import com.calyrsoft.ucbp1.features.dollar.presentation.DollarHistoryViewModel
 import com.calyrsoft.ucbp1.features.dollar.presentation.DollarViewModel
 import com.calyrsoft.ucbp1.features.github.data.api.GithubService
 import com.calyrsoft.ucbp1.features.github.data.datasource.GithubRemoteDataSource
@@ -30,6 +33,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+
 
 val appModule = module {
 
@@ -66,16 +70,22 @@ val appModule = module {
 
     // Repositories
     single<LoginRepository> { LoginRepositoryImpl() }
-    single<DollarRepository> { DollarRepositoryImpl() }
+    single { com.calyrsoft.ucbp1.features.dollar.data.datasource.RealTimeRemoteDataSource() }
     single<ProfileRepository> { ProfileRepositoryImpl() }
+    single<IDollarRepository> { DollarRepositoryImpl(get(), get()) }
     single { GithubRemoteDataSource(get()) }
     single<IGithubRepository> { GithubRepository(get()) }
     single { MovieRemoteDataSource(get()) }
     single<MovieRepository> { MovieRepositoryImpl(get()) }
+    single { AppRoomDatabase.getDatabase(get()) }
+    single { get<AppRoomDatabase>().dollarDao() }
+    single { DollarLocalDataSource(get()) }
+
+
 
     // UseCases
     factory { LoginUseCase(get()) }
-    factory { GetDollarUseCase(get()) }
+    factory { FetchDollarUseCase(get()) }
     factory { GetProfileUseCase(get()) }
     factory { FindByNickNameUseCase(get()) }
     factory { GetPopularMoviesUseCase(get()) }
@@ -83,7 +93,8 @@ val appModule = module {
     // ViewModels
     viewModel { LoginViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
-    viewModel { DollarViewModel(get()) }
+    viewModel { DollarViewModel(get(), get()) }
     viewModel { GithubViewModel(get(),get ()) }
     viewModel { MoviesViewModel(get()) }
+    viewModel { DollarHistoryViewModel(get()) }
 }
