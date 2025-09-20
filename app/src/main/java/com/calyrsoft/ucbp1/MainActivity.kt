@@ -65,13 +65,13 @@ class MainActivity : ComponentActivity() {
                         delay(500) // Esperar a que el NavHost esté listo
 
                         if (isUserLoggedIn) {
-                            // ✅ Usuario logueado: ir directo a GitHub
+                            //  Usuario logueado: ir directo a GitHub
                             navController.navigate(Screen.Github.route) {
                                 launchSingleTop = true
                             }
                             println("DEBUG: Usuario logueado - Navegando a GitHub")
                         } else {
-                            // ✅ Usuario no logueado: ir al login
+                            // Usuario no logueado: ir al login
                             navController.navigate(Screen.Login.route) {
                                 launchSingleTop = true
 
@@ -85,6 +85,8 @@ class MainActivity : ComponentActivity() {
                 // Verificar intent inicial al abrir la app
                 LaunchedEffect(Unit) {
                     val navigateTo = intent.getStringExtra("NAVIGATE_TO")
+                    val notificationId = intent.getLongExtra("NOTIFICATION_ID", 0)
+                    println("DEBUG: Intent recibido - NAVIGATE_TO: $navigateTo, ID: $notificationId")
                     if (navigateTo == "GITHUB") {
                         shouldNavigateToGithub.value = true
                         intent.removeExtra("NAVIGATE_TO")

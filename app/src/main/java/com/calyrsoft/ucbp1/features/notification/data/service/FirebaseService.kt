@@ -65,7 +65,7 @@ class FirebaseService : FirebaseMessagingService() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // ✅ USAR EL CANAL CORRECTO
+        // USAR EL CANAL CORRECTO
         val notificationBuilder = NotificationCompat.Builder(this, NotificationHelper.DEFAULT_CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(body)

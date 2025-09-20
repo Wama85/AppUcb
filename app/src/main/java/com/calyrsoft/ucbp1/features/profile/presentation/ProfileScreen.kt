@@ -18,13 +18,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
+import com.calyrsoft.ucbp1.core.AuthManager
 import com.calyrsoft.ucbp1.navigation.Screen
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,6 +36,8 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
+    val authManager = remember { AuthManager(context) }
     val state by viewModel.state.collectAsState()
 
     Surface(
@@ -125,6 +130,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(48.dp))
                 Button(
                     onClick = {
+                        authManager.logout()
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Profile.route) { inclusive = true }
                         }
