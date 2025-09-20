@@ -20,6 +20,9 @@ class LoginRepositoryImpl : LoginRepository {
                 return@flow
             }
 
+            // ✅ USAR EL FCM TOKEN (puedes enviarlo a tu API real aquí)
+            println("DEBUG: Login con FCM Token: ${request.fcmToken}")
+
             if (request.username == "admin" && request.password == "admin") {
                 val response = LoginResponse(
                     token = "mock_token_${System.currentTimeMillis()}",

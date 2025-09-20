@@ -1,16 +1,22 @@
 package com.calyrsoft.ucbp1.features.dollar.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.calyrsoft.ucbp1.features.dollar.data.datasource.DollarLocalDataSource
 import com.calyrsoft.ucbp1.features.dollar.domain.model.DollarModel
 import com.calyrsoft.ucbp1.features.dollar.domain.usecase.FetchDollarUseCase
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+
 class DollarViewModel(
     val fetchDollarUseCase: FetchDollarUseCase,
     private val localDataSource: DollarLocalDataSource
@@ -32,6 +38,7 @@ class DollarViewModel(
 
     fun getDollar() {
         viewModelScope.launch {
+
             fetchDollarUseCase()
                 .catch { e ->
                     _uiState.value = DollarUIState.Error("Error: ${e.message}")
@@ -54,4 +61,5 @@ class DollarViewModel(
             }
         }
     }
+
 }

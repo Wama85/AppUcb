@@ -1,17 +1,26 @@
 package com.calyrsoft.ucbp1.features.login.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.calyrsoft.ucbp1.core.AuthManager
 import com.calyrsoft.ucbp1.features.login.domain.usecase.LoginUseCase
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class LoginViewModel(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val authManager: AuthManager // ✅ Inyectar AuthManager por constructor
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -35,7 +44,16 @@ class LoginViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            loginUseCase(_state.value.username, _state.value.password)
+            // Obtener token FCM primero
+            val fcmToken = try {
+                getToken()
+            } catch (e: Exception) {
+                Log.e("LoginViewModel", "Error getting FCM token", e)
+                "" // Continuar sin token si hay error
+            }
+
+            // Usar el loginUseCase con el fcmToken
+            loginUseCase(_state.value.username, _state.value.password, fcmToken)
                 .catch { e ->
                     _state.update { it.copy(
                         isLoading = false,
@@ -44,6 +62,9 @@ class LoginViewModel(
                 }
                 .collect { result ->
                     result.onSuccess { response ->
+                        // ✅ GUARDAR ESTADO DE LOGIN EXITOSO
+                        authManager.saveLoginState(true, _state.value.username)
+
                         _state.update { it.copy(
                             isLoading = false,
                             isLoginSuccessful = true,
@@ -57,6 +78,21 @@ class LoginViewModel(
                     }
                 }
         }
+    }
+
+    // Función getToken
+    private suspend fun getToken(): String = suspendCoroutine { continuation ->
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FIREBASE", "getInstanceId failed", task.exception)
+                    continuation.resume("")
+                    return@addOnCompleteListener
+                }
+                val token = task.result
+                Log.d("FIREBASE", "FCM Token: $token")
+                continuation.resume(token ?: "")
+            }
     }
 }
 

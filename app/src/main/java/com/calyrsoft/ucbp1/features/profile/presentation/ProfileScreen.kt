@@ -120,6 +120,8 @@ fun ProfileScreen(
                     Text("Ir a Movies")
                 }
 
+
+
                 Spacer(modifier = Modifier.height(48.dp))
                 Button(
                     onClick = {

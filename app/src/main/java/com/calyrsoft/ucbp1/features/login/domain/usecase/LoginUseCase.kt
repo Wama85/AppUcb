@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 class LoginUseCase(
     private val loginRepository: LoginRepository
 ) {
-    operator fun invoke(username: String, password: String): Flow<Result<LoginResponse>> {
-        val request = LoginRequest(username, password)
+    operator fun invoke(username: String, password: String, fcmToken: String): Flow<Result<LoginResponse>> {
+        val request = LoginRequest(username, password, fcmToken )
         return loginRepository.login(request)
     }
 }

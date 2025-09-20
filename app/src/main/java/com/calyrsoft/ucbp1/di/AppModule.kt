@@ -1,5 +1,7 @@
 package com.calyrsoft.ucbp1.di
 
+import NotificationViewModel
+import com.calyrsoft.ucbp1.core.AuthManager
 import com.calyrsoft.ucbp1.features.dollar.data.database.AppRoomDatabase
 import com.calyrsoft.ucbp1.features.dollar.data.datasource.DollarLocalDataSource
 import com.calyrsoft.ucbp1.features.dollar.data.repository.DollarRepositoryImpl
@@ -23,6 +25,8 @@ import com.calyrsoft.ucbp1.features.movies.data.repository.MovieRepositoryImpl
 import com.calyrsoft.ucbp1.features.movies.domain.repository.MovieRepository
 import com.calyrsoft.ucbp1.features.movies.domain.usecase.GetPopularMoviesUseCase
 import com.calyrsoft.ucbp1.features.movies.presentation.viewmodel.MoviesViewModel
+import com.calyrsoft.ucbp1.features.notification.data.repository.NotificationRepository
+import com.calyrsoft.ucbp1.features.notification.data.repository.NotificationRepositoryImpl
 import com.calyrsoft.ucbp1.features.profile.data.ProfileRepositoryImpl
 import com.calyrsoft.ucbp1.features.profile.domain.repository.ProfileRepository
 import com.calyrsoft.ucbp1.features.profile.domain.usecase.GetProfileUseCase
@@ -36,7 +40,7 @@ import java.util.concurrent.TimeUnit
 
 
 val appModule = module {
-
+    single { AuthManager(get()) }
     // OkHttpClient
     single {
         OkHttpClient.Builder()
@@ -80,7 +84,7 @@ val appModule = module {
     single { AppRoomDatabase.getDatabase(get()) }
     single { get<AppRoomDatabase>().dollarDao() }
     single { DollarLocalDataSource(get()) }
-
+    single { NotificationRepositoryImpl() as NotificationRepository }
 
 
     // UseCases
@@ -90,11 +94,13 @@ val appModule = module {
     factory { FindByNickNameUseCase(get()) }
     factory { GetPopularMoviesUseCase(get()) }
 
+
     // ViewModels
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(),get ()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { DollarViewModel(get(), get()) }
     viewModel { GithubViewModel(get(),get ()) }
     viewModel { MoviesViewModel(get()) }
     viewModel { DollarHistoryViewModel(get()) }
+    viewModel { NotificationViewModel(get()) }
 }
