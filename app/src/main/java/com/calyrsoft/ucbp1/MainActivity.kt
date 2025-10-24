@@ -165,7 +165,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Image(
                             modifier = Modifier.width(120.dp),
-                            painter = painterResource(id = R.drawable.ic_launcher_background),
+                            painter = painterResource(id = R.drawable.logo),
                             contentDescription = "Logo",
                         )
                         Image(
