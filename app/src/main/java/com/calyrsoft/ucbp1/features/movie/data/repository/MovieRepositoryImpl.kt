@@ -9,9 +9,20 @@ class MovieRepositoryImpl(
     private val remoteDataSource: MovieRemoteDataSource
 ) : MovieRepository {
 
+    private var cachedMovies: List<Movie> = emptyList()
+
     override suspend fun getPopularMovies(): Result<List<Movie>> {
         return remoteDataSource.getPopularMovies().map { movieDtos ->
-            movieDtos.map { it.toDomain() }
+            movieDtos.map { it.toDomain() }.also { cachedMovies = it }
+        }
+    }
+
+    override suspend fun getMovieById(movieId: Int): Result<Movie> {
+        val movie = cachedMovies.find { it.id == movieId }
+        return if (movie != null) {
+            Result.success(movie)
+        } else {
+            Result.failure(Exception("Película no encontrada"))
         }
     }
 }
@@ -21,12 +32,12 @@ private fun MovieDto.toDomain(): Movie {
     return Movie(
         id = id,
         title = title,
-        overview = overview ?: "",
+        overview = overview,
         posterPath = posterPath?.let { "https://image.tmdb.org/t/p/w500$it" } ?: "",
         backdropPath = backdropPath?.let { "https://image.tmdb.org/t/p/w500$it" } ?: "",
-        releaseDate = releaseDate ?: "",
-        voteAverage = voteAverage ?: 0.0,
-        voteCount = voteCount ?: 0,
-        rating = (voteAverage ?: 0.0).toFloat() / 2f  // Convierte de escala 0-10 a 0-5
+        releaseDate = releaseDate,
+        voteAverage = voteAverage,
+        voteCount = voteCount,
+        rating = (voteAverage / 2.0).toFloat()
     )
 }

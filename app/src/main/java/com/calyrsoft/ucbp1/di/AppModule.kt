@@ -27,7 +27,9 @@ import com.calyrsoft.ucbp1.features.movie.data.api.MovieService
 import com.calyrsoft.ucbp1.features.movie.data.datasource.remote.MovieRemoteDataSource
 import com.calyrsoft.ucbp1.features.movie.data.repository.MovieRepositoryImpl
 import com.calyrsoft.ucbp1.features.movie.domain.repository.MovieRepository
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetMovieByIdUseCase
 import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetPopularMoviesUseCase
+import com.calyrsoft.ucbp1.features.movie.presentation.viewmodel.MovieDetailViewModel
 import com.calyrsoft.ucbp1.features.movie.presentation.viewmodel.MoviesViewModel
 import com.calyrsoft.ucbp1.features.notification.data.repository.NotificationRepository
 import com.calyrsoft.ucbp1.features.notification.data.repository.NotificationRepositoryImpl
@@ -92,6 +94,7 @@ val appModule = module {
     single { get<AppRoomDatabase>().dollarDao() }
     single { DollarLocalDataSource(get()) }
     single { NotificationRepositoryImpl() as NotificationRepository }
+    single { GetMovieByIdUseCase(get()) }
 
     // UseCases
     factory { LoginUseCase(get()) }
@@ -111,4 +114,5 @@ val appModule = module {
     viewModel { MoviesViewModel(get()) }
     viewModel { DollarHistoryViewModel(get()) }
     viewModel { NotificationViewModel(get()) }
+    viewModel { MovieDetailViewModel(get(), get()) }
 }

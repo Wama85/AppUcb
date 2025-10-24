@@ -26,10 +26,7 @@ fun MoviesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         when (val state = uiState) {
             is MoviesViewModel.MoviesUiState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -38,9 +35,16 @@ fun MoviesScreen(
             is MoviesViewModel.MoviesUiState.Success -> {
                 LazyColumn(modifier = Modifier.padding(8.dp)) {
                     items(state.movies) { movie ->
-                        MovieCard(movie = movie) {
-                            viewModel.updateMovieRating(movie.id, it)
-                        }
+                        MovieCard(
+                            movie = movie,
+                            onRatingChange = { rating ->
+                                viewModel.updateMovieRating(movie.id, rating)
+                            },
+                            onDetailClick = {
+                                // Navega a la pantalla de detalle
+                                navController.navigate("movie_detail/${movie.id}")
+                            }
+                        )
                     }
                 }
             }

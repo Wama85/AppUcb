@@ -21,7 +21,7 @@ fun RatingBar(
             Icon(
                 imageVector = if (index <= rating) Icons.Filled.Star else Icons.Filled.StarBorder,
                 contentDescription = "Star $index",
-                tint = Color.Yellow,
+                tint = Color(0xFFFFD700),
                 modifier = Modifier.clickable { onRatingChanged(index.toFloat()) }
             )
         }
