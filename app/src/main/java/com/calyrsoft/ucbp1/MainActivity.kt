@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,11 +48,8 @@ import com.calyrsoft.ucbp1.features.login.domain.usecase.GetUserSessionUseCase
 import com.calyrsoft.ucbp1.navigation.AppNavigation
 import com.calyrsoft.ucbp1.navigation.NavigationDrawer
 import com.calyrsoft.ucbp1.navigation.Screen
-
 import com.google.firebase.FirebaseApp
 import io.sentry.Sentry
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -90,7 +86,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // ✅ Llamar a MainApp
                     MainApp()
                 }
             }
@@ -121,13 +116,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // ✅ Función MainApp con Navigation Drawer
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainApp() {
         val navController: NavHostController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
+        val currentRoute = navBackStackEntry?.destination?.route
 
         val navigationDrawerItems = listOf(
             NavigationDrawer.Profile,
@@ -139,7 +133,6 @@ class MainActivity : ComponentActivity() {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val coroutineScope = rememberCoroutineScope()
 
-        // ✅ Verificar estado de login
         LaunchedEffect(Unit) {
             lifecycleScope.launch {
                 val loggedIn = checkLoginStatusUseCase()
@@ -151,16 +144,17 @@ class MainActivity : ComponentActivity() {
                     }
                 } else {
                     println("DEBUG: Usuario no logueado")
-                    // Redirigir al login si no está autenticado
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
             }
         }
+        val isLoginScreen = currentRoute == Screen.Login.route
 
         ModalNavigationDrawer(
             drawerState = drawerState,
+            gesturesEnabled = !isLoginScreen,
             drawerContent = {
                 ModalDrawerSheet(
                     modifier = Modifier.width(256.dp)
@@ -182,7 +176,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     navigationDrawerItems.forEach { item ->
-                        val isSelected = currentDestination?.route == item.route
+                        val isSelected = currentRoute == item.route
 
                         NavigationDrawerItem(
                             icon = {
@@ -210,48 +204,35 @@ class MainActivity : ComponentActivity() {
                 }
             }
         ) {
-            NavigationDrawerHost(
-                coroutineScope = coroutineScope,
-                drawerState = drawerState,
-                navController = navController
-            )
-        }
-    }
-
-    // ✅ Función NavigationDrawerHost
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun NavigationDrawerHost(
-        coroutineScope: CoroutineScope,
-        drawerState: DrawerState,
-        navController: NavHostController
-    ) {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text(stringResource(R.string.app_name)) },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                drawerState.open()
+            Scaffold(
+                topBar = {
+                    if (!isLoginScreen) {
+                        CenterAlignedTopAppBar(
+                            title = { Text(stringResource(R.string.app_name)) },
+                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    coroutineScope.launch {
+                                        drawerState.open()
+                                    }
+                                }) {
+                                    Icon(
+                                        Icons.Default.Menu,
+                                        contentDescription = "Menu"
+                                    )
+                                }
                             }
-                        }) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = "Menu"
-                            )
-                        }
+                        )
                     }
+                }
+            ) { innerPadding ->
+                AppNavigation(
+                    navController = navController,
+                    modifier = Modifier.padding(innerPadding)
                 )
             }
-        ) { innerPadding ->
-            AppNavigation(
-                navController = navController,
-                modifier = Modifier.padding(innerPadding)
-            )
         }
     }
 }

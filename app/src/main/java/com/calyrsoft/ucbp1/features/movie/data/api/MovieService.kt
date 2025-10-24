@@ -1,7 +1,8 @@
-package com.calyrsoft.ucbp1.features.movies.data.api
+package com.calyrsoft.ucbp1.features.movie.data.api
 
 
-import com.calyrsoft.ucbp1.features.movies.data.api.dto.MoviesResponseDto
+import com.calyrsoft.ucbp1.features.movie.data.api.dto.MoviesResponseDto
+
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

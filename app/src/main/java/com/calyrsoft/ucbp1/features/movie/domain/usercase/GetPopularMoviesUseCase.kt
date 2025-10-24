@@ -1,7 +1,7 @@
-package com.calyrsoft.ucbp1.features.movies.domain.usecase
+package com.calyrsoft.ucbp1.features.movie.domain.usercase
 
-import com.calyrsoft.ucbp1.features.movies.domain.model.Movie
-import com.calyrsoft.ucbp1.features.movies.domain.repository.MovieRepository
+import com.calyrsoft.ucbp1.features.movie.domain.model.Movie
+import com.calyrsoft.ucbp1.features.movie.domain.repository.MovieRepository
 
 class GetPopularMoviesUseCase(
     private val repository: MovieRepository

@@ -1,8 +1,8 @@
-package com.calyrsoft.ucbp1.features.movies.data.datasource.remote
+package com.calyrsoft.ucbp1.features.movie.data.datasource.remote
 
 import com.calyrsoft.ucbp1.BuildConfig
-import com.calyrsoft.ucbp1.features.movies.data.api.MovieService
-import com.calyrsoft.ucbp1.features.movies.data.api.dto.MovieDto
+import com.calyrsoft.ucbp1.features.movie.data.api.MovieService
+import com.calyrsoft.ucbp1.features.movie.data.api.dto.MovieDto
 
 class MovieRemoteDataSource(
     private val movieService: MovieService

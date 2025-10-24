@@ -1,4 +1,4 @@
-package com.calyrsoft.ucbp1.features.movies.presentation.components
+package com.calyrsoft.ucbp1.features.movie.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -22,10 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.calyrsoft.ucbp1.features.movies.domain.model.Movie
+import com.calyrsoft.ucbp1.features.movie.domain.model.Movie
 
 @Composable
-fun MovieCard(movie: Movie) {
+fun MovieCard(movie: Movie, onRatingChanged: (Float) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,6 +73,10 @@ fun MovieCard(movie: Movie) {
                     text = "Estreno: ${movie.releaseDate}",
                     style = MaterialTheme.typography.bodySmall
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                RatingBar(rating = movie.rating, onRatingChanged = onRatingChanged)
 
                 Spacer(modifier = Modifier.height(8.dp))
 

@@ -1,12 +1,13 @@
-package com.calyrsoft.ucbp1.features.movies.presentation.viewmodel
+package com.calyrsoft.ucbp1.features.movie.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.calyrsoft.ucbp1.features.movies.domain.model.Movie
-import com.calyrsoft.ucbp1.features.movies.domain.usecase.GetPopularMoviesUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.model.Movie
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetPopularMoviesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MoviesViewModel(
@@ -32,6 +33,23 @@ class MoviesViewModel(
                     _uiState.value = MoviesUiState.Error(exception.message ?: "Error desconocido")
                 }
             )
+        }
+    }
+
+    fun updateMovieRating(movieId: Int, newRating: Float) {
+        _uiState.update {
+            if (it is MoviesUiState.Success) {
+                val updatedMovies = it.movies.map {
+                    if (it.id == movieId) {
+                        it.copy(rating = newRating)
+                    } else {
+                        it
+                    }
+                }.sortedByDescending { movie -> movie.rating }
+                it.copy(movies = updatedMovies)
+            } else {
+                it
+            }
         }
     }
 

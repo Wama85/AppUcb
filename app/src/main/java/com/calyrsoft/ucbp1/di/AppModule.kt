@@ -23,12 +23,12 @@ import com.calyrsoft.ucbp1.features.login.domain.usecase.GetUserSessionUseCase
 import com.calyrsoft.ucbp1.features.login.domain.usecase.LoginUseCase
 import com.calyrsoft.ucbp1.features.login.domain.usecase.LogoutUseCase
 import com.calyrsoft.ucbp1.features.login.presentation.LoginViewModel
-import com.calyrsoft.ucbp1.features.movies.data.api.MovieService
-import com.calyrsoft.ucbp1.features.movies.data.datasource.remote.MovieRemoteDataSource
-import com.calyrsoft.ucbp1.features.movies.data.repository.MovieRepositoryImpl
-import com.calyrsoft.ucbp1.features.movies.domain.repository.MovieRepository
-import com.calyrsoft.ucbp1.features.movies.domain.usecase.GetPopularMoviesUseCase
-import com.calyrsoft.ucbp1.features.movies.presentation.viewmodel.MoviesViewModel
+import com.calyrsoft.ucbp1.features.movie.data.api.MovieService
+import com.calyrsoft.ucbp1.features.movie.data.datasource.remote.MovieRemoteDataSource
+import com.calyrsoft.ucbp1.features.movie.data.repository.MovieRepositoryImpl
+import com.calyrsoft.ucbp1.features.movie.domain.repository.MovieRepository
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetPopularMoviesUseCase
+import com.calyrsoft.ucbp1.features.movie.presentation.viewmodel.MoviesViewModel
 import com.calyrsoft.ucbp1.features.notification.data.repository.NotificationRepository
 import com.calyrsoft.ucbp1.features.notification.data.repository.NotificationRepositoryImpl
 import com.calyrsoft.ucbp1.features.profile.data.ProfileRepositoryImpl
@@ -41,6 +41,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+
 val appModule = module {
     // AuthManager (puedes mantenerlo o migrarlo completamente a DataStore)
     single { AuthManager(get()) }

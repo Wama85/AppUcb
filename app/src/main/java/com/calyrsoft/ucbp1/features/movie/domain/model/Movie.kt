@@ -1,4 +1,4 @@
-package com.calyrsoft.ucbp1.features.movies.domain.model
+package com.calyrsoft.ucbp1.features.movie.domain.model
 
 data class Movie(
     val id: Int,
@@ -8,7 +8,8 @@ data class Movie(
     val backdropPath: String?,
     val releaseDate: String,
     val voteAverage: Double,
-    val voteCount: Int
+    val voteCount: Int,
+    val rating: Float = 0.0f
 ) {
     // URL completa para la imagen del poster
     fun getFullPosterUrl(): String {

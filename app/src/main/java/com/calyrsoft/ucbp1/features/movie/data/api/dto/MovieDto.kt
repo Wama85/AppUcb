@@ -1,4 +1,4 @@
-package com.calyrsoft.ucbp1.features.movies.data.api.dto
+package com.calyrsoft.ucbp1.features.movie.data.api.dto
 
 import com.google.gson.annotations.SerializedName
 

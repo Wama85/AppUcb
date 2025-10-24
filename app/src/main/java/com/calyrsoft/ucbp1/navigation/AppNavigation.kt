@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import com.calyrsoft.ucbp1.features.dollar.presentation.DollarScreen
 import com.calyrsoft.ucbp1.features.github.presentation.GithubScreen
 import com.calyrsoft.ucbp1.features.login.presentation.LoginScreen
-import com.calyrsoft.ucbp1.features.movies.presentation.screen.MoviesScreen
+import com.calyrsoft.ucbp1.features.movie.presentation.screen.MoviesScreen
 import com.calyrsoft.ucbp1.features.notification.presentation.NotificationScreen
 import com.calyrsoft.ucbp1.features.profile.presentation.ProfileScreen
 
