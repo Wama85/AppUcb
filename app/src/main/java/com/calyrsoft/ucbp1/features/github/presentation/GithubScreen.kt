@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.calyrsoft.ucbp1.core.presentation.components.TopAppBarWithBack
+
 import com.calyrsoft.ucbp1.features.github.presentation.components.UserProfileCard
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,10 +39,7 @@ fun GithubScreen(
 
     Scaffold(
         topBar = {
-            TopAppBarWithBack(
-                title = "Buscar en GitHub",
-                navController = navController
-            )
+
         }
     ) { innerPadding ->
         Column(

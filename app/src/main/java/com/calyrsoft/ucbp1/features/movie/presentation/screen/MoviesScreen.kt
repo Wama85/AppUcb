@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.calyrsoft.ucbp1.core.presentation.components.TopAppBarWithBack
+
 import com.calyrsoft.ucbp1.features.movies.presentation.components.MovieCard
 import com.calyrsoft.ucbp1.features.movies.presentation.viewmodel.MoviesViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -32,10 +32,7 @@ fun MoviesScreen(
 
     Scaffold(
         topBar = {
-            TopAppBarWithBack(
-                title = "Películas Populares", // String, no composable
-                navController = navController // Pasa el navController
-            )
+
         }
     ) { innerPadding ->
         Box(

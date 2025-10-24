@@ -1,5 +1,6 @@
 package com.calyrsoft.ucbp1.features.login.data
 
+import com.calyrsoft.ucbp1.features.login.data.datasource.LoginDataStore
 import com.calyrsoft.ucbp1.features.login.domain.model.LoginRequest
 import com.calyrsoft.ucbp1.features.login.domain.model.LoginResponse
 import com.calyrsoft.ucbp1.features.login.domain.repository.LoginRepository
@@ -7,7 +8,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class LoginRepositoryImpl : LoginRepository {
+class LoginRepositoryImpl(
+    private val loginDataStore: LoginDataStore
+) : LoginRepository {
 
     override fun login(request: LoginRequest): Flow<Result<LoginResponse>> = flow {
         try {
@@ -20,10 +23,10 @@ class LoginRepositoryImpl : LoginRepository {
                 return@flow
             }
 
-            // ✅ USAR EL FCM TOKEN (puedes enviarlo a tu API real aquí)
+            // USAR EL FCM TOKEN (puedes enviarlo a tu API real aquí)
             println("DEBUG: Login con FCM Token: ${request.fcmToken}")
 
-            if (request.username == "admin" && request.password == "admin") {
+            if (request.username == "123" && request.password == "123") {
                 val response = LoginResponse(
                     token = "mock_token_${System.currentTimeMillis()}",
                     userId = "user_123"
@@ -35,5 +38,30 @@ class LoginRepositoryImpl : LoginRepository {
         } catch (e: Exception) {
             emit(Result.failure(Exception(e.message ?: "Error de conexión")))
         }
+    }
+
+    // Implementar métodos de sesión
+    override suspend fun saveSession(userName: String, token: String, userId: String) {
+        loginDataStore.saveSession(userName, token, userId)
+    }
+
+    override suspend fun getUserName(): Result<String> {
+        return loginDataStore.getUserName()
+    }
+
+    override suspend fun getToken(): Result<String> {
+        return loginDataStore.getToken()
+    }
+
+    override suspend fun getUserId(): Result<String> {
+        return loginDataStore.getUserId()
+    }
+
+    override suspend fun isLoggedIn(): Boolean {
+        return loginDataStore.isLoggedIn()
+    }
+
+    override suspend fun clearSession() {
+        loginDataStore.clearSession()
     }
 }

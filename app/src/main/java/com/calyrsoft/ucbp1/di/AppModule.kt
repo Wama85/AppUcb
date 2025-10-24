@@ -16,8 +16,12 @@ import com.calyrsoft.ucbp1.features.github.domain.repository.IGithubRepository
 import com.calyrsoft.ucbp1.features.github.domain.usecase.FindByNickNameUseCase
 import com.calyrsoft.ucbp1.features.github.presentation.GithubViewModel
 import com.calyrsoft.ucbp1.features.login.data.LoginRepositoryImpl
+import com.calyrsoft.ucbp1.features.login.data.datasource.LoginDataStore
 import com.calyrsoft.ucbp1.features.login.domain.repository.LoginRepository
+import com.calyrsoft.ucbp1.features.login.domain.usecase.CheckLoginStatusUseCase
+import com.calyrsoft.ucbp1.features.login.domain.usecase.GetUserSessionUseCase
 import com.calyrsoft.ucbp1.features.login.domain.usecase.LoginUseCase
+import com.calyrsoft.ucbp1.features.login.domain.usecase.LogoutUseCase
 import com.calyrsoft.ucbp1.features.login.presentation.LoginViewModel
 import com.calyrsoft.ucbp1.features.movies.data.api.MovieService
 import com.calyrsoft.ucbp1.features.movies.data.datasource.remote.MovieRemoteDataSource
@@ -37,10 +41,13 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-
-
 val appModule = module {
+    // AuthManager (puedes mantenerlo o migrarlo completamente a DataStore)
     single { AuthManager(get()) }
+
+    // LoginDataStore - NUEVO
+    single { LoginDataStore(get()) }
+
     // OkHttpClient
     single {
         OkHttpClient.Builder()
@@ -59,12 +66,11 @@ val appModule = module {
             .build()
     }
 
-    // GithubService
+    // Services
     single<GithubService> {
         get<Retrofit>().create(GithubService::class.java)
     }
 
-    // MovieDB Service (base URL diferente)
     single<MovieService> {
         get<Retrofit>().newBuilder()
             .baseUrl("https://api.themoviedb.org/3/")
@@ -73,7 +79,7 @@ val appModule = module {
     }
 
     // Repositories
-    single<LoginRepository> { LoginRepositoryImpl() }
+    single<LoginRepository> { LoginRepositoryImpl(get()) } // ACTUALIZADO - ahora recibe LoginDataStore
     single { com.calyrsoft.ucbp1.features.dollar.data.datasource.RealTimeRemoteDataSource() }
     single<ProfileRepository> { ProfileRepositoryImpl() }
     single<IDollarRepository> { DollarRepositoryImpl(get(), get()) }
@@ -86,20 +92,21 @@ val appModule = module {
     single { DollarLocalDataSource(get()) }
     single { NotificationRepositoryImpl() as NotificationRepository }
 
-
     // UseCases
     factory { LoginUseCase(get()) }
+    factory { GetUserSessionUseCase(get()) } // NUEVO
+    factory { CheckLoginStatusUseCase(get()) } // NUEVO
+    factory { LogoutUseCase(get()) } // NUEVO
     factory { FetchDollarUseCase(get()) }
     factory { GetProfileUseCase(get()) }
     factory { FindByNickNameUseCase(get()) }
     factory { GetPopularMoviesUseCase(get()) }
 
-
     // ViewModels
-    viewModel { LoginViewModel(get(),get ()) }
-    viewModel { ProfileViewModel(get()) }
+    viewModel { LoginViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(),get(),get()) }
     viewModel { DollarViewModel(get(), get()) }
-    viewModel { GithubViewModel(get(),get ()) }
+    viewModel { GithubViewModel(get(), get()) }
     viewModel { MoviesViewModel(get()) }
     viewModel { DollarHistoryViewModel(get()) }
     viewModel { NotificationViewModel(get()) }

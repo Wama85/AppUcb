@@ -10,24 +10,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
-import com.calyrsoft.ucbp1.core.AuthManager
 import com.calyrsoft.ucbp1.navigation.Screen
 import org.koin.androidx.compose.koinViewModel
 
@@ -36,9 +33,16 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
-    val context = LocalContext.current
-    val authManager = remember { AuthManager(context) }
     val state by viewModel.state.collectAsState()
+
+    // ✅ Manejar logout - redirigir al login
+    LaunchedEffect(state.isLoggedOut) {
+        if (state.isLoggedOut) {
+            navController.navigate(Screen.Login.route) {
+                popUpTo(0) { inclusive = true } // Limpiar todo el backstack
+            }
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -53,9 +57,16 @@ fun ProfileScreen(
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator()
+            } else if (state.error != null) {
+                // Mostrar error
+                Text(
+                    text = "Error: ${state.error}",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             } else {
-                // Avatar/Photo
-                state.avatarUrl?.let { url ->
+                // ✅ Avatar/Photo del Profile
+                state.profileData?.avatarUrl?.let { url ->
                     Image(
                         painter = rememberAsyncImagePainter(url),
                         contentDescription = "Foto de perfil",
@@ -64,7 +75,6 @@ fun ProfileScreen(
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
-
                     Spacer(modifier = Modifier.height(24.dp))
                 }
 
@@ -75,24 +85,52 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = state.userName,
-                    style = MaterialTheme.typography.titleLarge
-                )
+                // ✅ Nombre del perfil (del Profile model)
+                state.profileData?.name?.let { name ->
+                    Text(
+                        text = name,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                // ✅ Email del perfil (del Profile model)
+                state.profileData?.email?.let { email ->
+                    Text(
+                        text = email,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                // ✅ Username y UserID recuperados del DataStore
+                if (state.userName.isNotEmpty()) {
+                    Text(
+                        text = "Usuario: ${state.userName}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                if (state.userId.isNotEmpty()) {
+                    Text(
+                        text = "ID: ${state.userId}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = state.userEmail,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    text = "Esta es la pantalla de perfil. Aquí podrás ver y gestionar tu información personal.",
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-               // En ProfileScreen.kt, agrega este botón después de la información del perfil:
 
-
-               //  Botón para ir a la pantalla del dólar
+                // Botón para ir a la pantalla del dólar
                 Button(
                     onClick = {
                         navController.navigate(Screen.Dollar.route)
@@ -103,11 +141,6 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "Esta es la pantalla de perfil. Aquí podrás ver y gestionar tu información personal.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(48.dp))
                 Button(
                     onClick = {
                         navController.navigate(Screen.Github.route)
@@ -116,7 +149,8 @@ fun ProfileScreen(
                     Text("GitHub")
                 }
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Button(
                     onClick = {
                         navController.navigate(Screen.Movie.route)
@@ -125,20 +159,16 @@ fun ProfileScreen(
                     Text("Ir a Movies")
                 }
 
-
-
                 Spacer(modifier = Modifier.height(48.dp))
+
+                // ✅ Botón de logout usando el ViewModel con DataStore
                 Button(
                     onClick = {
-                        authManager.logout()
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.Profile.route) { inclusive = true }
-                        }
+                        viewModel.logout()
                     }
                 ) {
                     Text("Cerrar Sesión")
                 }
-
             }
         }
     }

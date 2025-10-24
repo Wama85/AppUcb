@@ -21,6 +21,8 @@ room = "2.8.0"
 googleGmsGoogleServices = "4.4.3"
 firebaseDatabase = "22.0.0"
 firebaseMessaging = "25.0.1"
+datastore = "1.0.0"
+
 
 
 [libraries]
@@ -57,6 +59,7 @@ room-testing = { group="androidx.room", name="room-testing", version.ref="room"}
 room-paging = { group="androidx.room", name="room-paging", version.ref="room"}
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 
 [plugins]

@@ -3,8 +3,8 @@ package com.calyrsoft.ucbp1.features.login.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.calyrsoft.ucbp1.core.AuthManager
 import com.calyrsoft.ucbp1.features.login.domain.usecase.LoginUseCase
+import com.calyrsoft.ucbp1.features.login.domain.repository.LoginRepository
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,13 +14,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
-    private val authManager: AuthManager // ✅ Inyectar AuthManager por constructor
+    private val loginRepository: LoginRepository // NUEVO - para guardar sesión
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -62,8 +59,17 @@ class LoginViewModel(
                 }
                 .collect { result ->
                     result.onSuccess { response ->
-                        // ✅ GUARDAR ESTADO DE LOGIN EXITOSO
-                        authManager.saveLoginState(true, _state.value.username)
+                        // ✅ GUARDAR SESIÓN EN DATASTORE
+                        try {
+                            loginRepository.saveSession(
+                                userName = _state.value.username,
+                                token = response.token,
+                                userId = response.userId
+                            )
+                            Log.d("LoginViewModel", "Sesión guardada: ${response.token}")
+                        } catch (e: Exception) {
+                            Log.e("LoginViewModel", "Error guardando sesión", e)
+                        }
 
                         _state.update { it.copy(
                             isLoading = false,

@@ -34,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.calyrsoft.ucbp1.core.presentation.components.TopAppBarWithBack
+
 import com.calyrsoft.ucbp1.features.dollar.domain.model.DollarModel
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
@@ -51,21 +51,7 @@ fun DollarScreen(
 
     Scaffold(
         topBar = {
-            TopAppBarWithBack(
-                title = "Cotización del Dólar",
-                navController = navController,
-                actions = {
-                    IconButton(
-                        onClick = { viewModelDollar.loadHistory() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Actualizar",
-                            tint = Color.White
-                        )
-                    }
-                }
-            )
+
         }
     ) { innerPadding ->
         Column(
