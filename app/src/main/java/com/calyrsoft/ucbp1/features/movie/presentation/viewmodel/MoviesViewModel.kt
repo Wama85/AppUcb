@@ -4,14 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.calyrsoft.ucbp1.features.movie.domain.model.Movie
 import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetPopularMoviesUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetSavedMoviesUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.SaveMovieUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.ToggleWatchLaterUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.UpdateMovieRatingUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MoviesViewModel(
-    private val getPopularMoviesUseCase: GetPopularMoviesUseCase
+    private val getPopularMoviesUseCase: GetPopularMoviesUseCase,
+    private val saveMovieUseCase: SaveMovieUseCase,
+    private val updateMovieRatingUseCase: UpdateMovieRatingUseCase,
+    private val getSavedMoviesUseCase: GetSavedMoviesUseCase,
+    private val toggleWatchLaterUseCase: ToggleWatchLaterUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
@@ -26,8 +33,34 @@ class MoviesViewModel(
             _uiState.value = MoviesUiState.Loading
             val result = getPopularMoviesUseCase()
             result.fold(
-                onSuccess = { movies ->
-                    _uiState.value = MoviesUiState.Success(movies)
+                onSuccess = { apiMovies ->
+                    // Obtener películas guardadas en BD
+                    val savedMovies = try {
+                        getSavedMoviesUseCase()
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                    
+                    // Crear mapas de datos guardados
+                    val savedRatings = savedMovies.associate { it.id to it.rating }
+                    val savedWatchLater = savedMovies.associate { it.id to it.watchLater }
+                    
+                    // Combinar datos de API con datos guardados
+                    val moviesWithSavedData = apiMovies.map { movie ->
+                        movie.copy(
+                            rating = savedRatings[movie.id] ?: 0f,
+                            watchLater = savedWatchLater[movie.id] ?: false
+                        )
+                    }
+                    
+                    // Guardar películas en BD
+                    moviesWithSavedData.forEach { movie ->
+                        saveMovieUseCase(movie)
+                    }
+                    
+                    _uiState.value = MoviesUiState.Success(
+                        moviesWithSavedData.sortedByDescending { it.rating }
+                    )
                 },
                 onFailure = { exception ->
                     _uiState.value = MoviesUiState.Error(exception.message ?: "Error desconocido")
@@ -37,18 +70,46 @@ class MoviesViewModel(
     }
 
     fun updateMovieRating(movieId: Int, newRating: Float) {
-        _uiState.update {
-            if (it is MoviesUiState.Success) {
-                val updatedMovies = it.movies.map {
-                    if (it.id == movieId) {
-                        it.copy(rating = newRating)
+        viewModelScope.launch {
+            // Actualizar en BD
+            updateMovieRatingUseCase(movieId, newRating)
+            
+            // Actualizar UI INMEDIATAMENTE
+            val currentState = _uiState.value
+            if (currentState is MoviesUiState.Success) {
+                val updatedMovies = currentState.movies.map { movie ->
+                    if (movie.id == movieId) {
+                        movie.copy(rating = newRating)
                     } else {
-                        it
+                        movie
                     }
-                }.sortedByDescending { movie -> movie.rating }
-                it.copy(movies = updatedMovies)
-            } else {
-                it
+                }.sortedByDescending { it.rating }
+                
+                _uiState.value = MoviesUiState.Success(updatedMovies)
+            }
+        }
+    }
+
+    fun toggleWatchLater(movieId: Int) {
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            if (currentState is MoviesUiState.Success) {
+                val movie = currentState.movies.find { it.id == movieId }
+                val newWatchLaterState = !(movie?.watchLater ?: false)
+                
+                // Actualizar en BD
+                toggleWatchLaterUseCase(movieId, newWatchLaterState)
+                
+                // Actualizar UI
+                val updatedMovies = currentState.movies.map { m ->
+                    if (m.id == movieId) {
+                        m.copy(watchLater = newWatchLaterState)
+                    } else {
+                        m
+                    }
+                }
+                
+                _uiState.value = MoviesUiState.Success(updatedMovies)
             }
         }
     }

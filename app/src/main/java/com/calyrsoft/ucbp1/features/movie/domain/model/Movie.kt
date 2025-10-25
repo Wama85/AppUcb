@@ -9,7 +9,8 @@ data class Movie(
     val releaseDate: String,
     val voteAverage: Double,
     val voteCount: Int,
-    val rating: Float = 0.0f
+    val rating: Float = 0.0f,
+    val watchLater: Boolean = false
 ) {
     // URL completa para la imagen del poster
     fun getFullPosterUrl(): String {

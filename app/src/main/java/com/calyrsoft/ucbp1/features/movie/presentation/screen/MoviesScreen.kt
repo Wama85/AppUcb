@@ -40,8 +40,10 @@ fun MoviesScreen(
                             onRatingChange = { rating ->
                                 viewModel.updateMovieRating(movie.id, rating)
                             },
+                            onWatchLaterClick = {
+                                viewModel.toggleWatchLater(movie.id)
+                            },
                             onDetailClick = {
-                                // Navega a la pantalla de detalle
                                 navController.navigate("movie_detail/${movie.id}")
                             }
                         )

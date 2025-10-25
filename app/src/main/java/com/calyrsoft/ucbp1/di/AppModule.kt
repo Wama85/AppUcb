@@ -24,11 +24,19 @@ import com.calyrsoft.ucbp1.features.login.domain.usecase.LoginUseCase
 import com.calyrsoft.ucbp1.features.login.domain.usecase.LogoutUseCase
 import com.calyrsoft.ucbp1.features.login.presentation.LoginViewModel
 import com.calyrsoft.ucbp1.features.movie.data.api.MovieService
+import com.calyrsoft.ucbp1.features.movie.data.database.MovieRoomDatabase
 import com.calyrsoft.ucbp1.features.movie.data.datasource.remote.MovieRemoteDataSource
 import com.calyrsoft.ucbp1.features.movie.data.repository.MovieRepositoryImpl
+import com.calyrsoft.ucbp1.features.movie.data.repository.MovieLocalRepository
 import com.calyrsoft.ucbp1.features.movie.domain.repository.MovieRepository
+import com.calyrsoft.ucbp1.features.movie.domain.repository.IMovieRepository
 import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetMovieByIdUseCase
 import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetPopularMoviesUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetSavedMoviesUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.GetWatchLaterMoviesUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.SaveMovieUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.ToggleWatchLaterUseCase
+import com.calyrsoft.ucbp1.features.movie.domain.usercase.UpdateMovieRatingUseCase
 import com.calyrsoft.ucbp1.features.movie.presentation.viewmodel.MovieDetailViewModel
 import com.calyrsoft.ucbp1.features.movie.presentation.viewmodel.MoviesViewModel
 import com.calyrsoft.ucbp1.features.notification.data.repository.NotificationRepository
@@ -82,7 +90,7 @@ val appModule = module {
     }
 
     // Repositories
-    single<LoginRepository> { LoginRepositoryImpl(get()) } // ACTUALIZADO - ahora recibe LoginDataStore
+    single<LoginRepository> { LoginRepositoryImpl(get()) }
     single { com.calyrsoft.ucbp1.features.dollar.data.datasource.RealTimeRemoteDataSource() }
     single<ProfileRepository> { ProfileRepositoryImpl() }
     single<IDollarRepository> { DollarRepositoryImpl(get(), get()) }
@@ -90,28 +98,40 @@ val appModule = module {
     single<IGithubRepository> { GithubRepository(get()) }
     single { MovieRemoteDataSource(get()) }
     single<MovieRepository> { MovieRepositoryImpl(get()) }
+    single { NotificationRepositoryImpl() as NotificationRepository }
+    
+    // Dollar Database
     single { AppRoomDatabase.getDatabase(get()) }
     single { get<AppRoomDatabase>().dollarDao() }
     single { DollarLocalDataSource(get()) }
-    single { NotificationRepositoryImpl() as NotificationRepository }
-    single { GetMovieByIdUseCase(get()) }
+    
+    // Movie Database - NUEVO
+    single { MovieRoomDatabase.getDatabase(get()) }
+    single { get<MovieRoomDatabase>().movieDao() }
+    single<IMovieRepository> { MovieLocalRepository(get()) }
 
     // UseCases
     factory { LoginUseCase(get()) }
-    factory { GetUserSessionUseCase(get()) } // NUEVO
-    factory { CheckLoginStatusUseCase(get()) } // NUEVO
-    factory { LogoutUseCase(get()) } // NUEVO
+    factory { GetUserSessionUseCase(get()) }
+    factory { CheckLoginStatusUseCase(get()) }
+    factory { LogoutUseCase(get()) }
     factory { FetchDollarUseCase(get()) }
     factory { GetProfileUseCase(get()) }
     factory { FindByNickNameUseCase(get()) }
     factory { GetPopularMoviesUseCase(get()) }
+    factory { GetMovieByIdUseCase(get()) }
+    factory { SaveMovieUseCase(get()) }
+    factory { UpdateMovieRatingUseCase(get()) }
+    factory { GetSavedMoviesUseCase(get()) }
+    factory { ToggleWatchLaterUseCase(get()) }
+    factory { GetWatchLaterMoviesUseCase(get()) }
 
     // ViewModels
     viewModel { LoginViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(),get(),get()) }
     viewModel { DollarViewModel(get(), get()) }
     viewModel { GithubViewModel(get(), get()) }
-    viewModel { MoviesViewModel(get()) }
+    viewModel { MoviesViewModel(get(), get(), get(), get(), get()) }
     viewModel { DollarHistoryViewModel(get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { MovieDetailViewModel(get(), get()) }
