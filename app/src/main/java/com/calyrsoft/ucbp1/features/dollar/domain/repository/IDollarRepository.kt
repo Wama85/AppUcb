@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface IDollarRepository {
     fun getDollar(): Flow<DollarModel>
+    fun getDollarHistory(): Flow<List<DollarModel>>
 }
