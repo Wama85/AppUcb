@@ -14,54 +14,41 @@ class LoginRepositoryImpl(
 
     override fun login(request: LoginRequest): Flow<Result<LoginResponse>> = flow {
         try {
-            // Simulamos un delay de red
-            delay(1000)
+            delay(1000) // simulamos llamada de red
 
-            // Validación simple
             if (request.username.isEmpty() || request.password.isEmpty()) {
-                emit(Result.failure(Exception("Usuario y contraseña son requeridos")))
+                emit(Result.failure(Exception("⚠️ Usuario y contraseña son requeridos")))
                 return@flow
             }
 
-            // USAR EL FCM TOKEN (puedes enviarlo a tu API real aquí)
-            println("DEBUG: Login con FCM Token: ${request.fcmToken}")
+            println("MOCK LOGIN → usuario=${request.username}, tokenFCM=${request.fcmToken}")
 
-            if (request.username == "123" && request.password == "123") {
+            // 🔹 Simulación de login exitoso
+            if ((request.username == "admin" && request.password == "admin") ||
+                (request.username == "123" && request.password == "123")
+            ) {
                 val response = LoginResponse(
                     token = "mock_token_${System.currentTimeMillis()}",
-                    userId = "user_123"
+                    userId = "user_${request.username}",
+                    message = "✅ Bienvenido ${request.username}"
                 )
                 emit(Result.success(response))
             } else {
-                emit(Result.failure(Exception("Credenciales inválidas")))
+                emit(Result.failure(Exception("❌ Credenciales inválidas")))
             }
         } catch (e: Exception) {
-            emit(Result.failure(Exception(e.message ?: "Error de conexión")))
+            emit(Result.failure(Exception("Error simulado: ${e.message ?: "desconocido"}")))
         }
     }
 
-    // Implementar métodos de sesión
+    // 🔹 Métodos de sesión (mock + DataStore)
     override suspend fun saveSession(userName: String, token: String, userId: String) {
         loginDataStore.saveSession(userName, token, userId)
     }
 
-    override suspend fun getUserName(): Result<String> {
-        return loginDataStore.getUserName()
-    }
-
-    override suspend fun getToken(): Result<String> {
-        return loginDataStore.getToken()
-    }
-
-    override suspend fun getUserId(): Result<String> {
-        return loginDataStore.getUserId()
-    }
-
-    override suspend fun isLoggedIn(): Boolean {
-        return loginDataStore.isLoggedIn()
-    }
-
-    override suspend fun clearSession() {
-        loginDataStore.clearSession()
-    }
+    override suspend fun getUserName(): Result<String> = loginDataStore.getUserName()
+    override suspend fun getToken(): Result<String> = loginDataStore.getToken()
+    override suspend fun getUserId(): Result<String> = loginDataStore.getUserId()
+    override suspend fun isLoggedIn(): Boolean = loginDataStore.isLoggedIn()
+    override suspend fun clearSession() = loginDataStore.clearSession()
 }
