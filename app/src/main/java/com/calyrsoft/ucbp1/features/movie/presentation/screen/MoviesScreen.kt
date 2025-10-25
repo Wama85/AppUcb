@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.calyrsoft.ucbp1.features.movie.domain.model.Movie
 import com.calyrsoft.ucbp1.features.movie.presentation.components.MovieCard
 import com.calyrsoft.ucbp1.features.movie.presentation.viewmodel.MoviesViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -22,6 +23,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MoviesScreen(
     navController: NavController,
+    navigateToDetail: (movie: Movie) -> Unit,
     viewModel: MoviesViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -44,7 +46,7 @@ fun MoviesScreen(
                                 viewModel.toggleWatchLater(movie.id)
                             },
                             onDetailClick = {
-                                navController.navigate("movie_detail/${movie.id}")
+                                navigateToDetail(movie)
                             }
                         )
                     }

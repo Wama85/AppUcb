@@ -1,5 +1,8 @@
 package com.calyrsoft.ucbp1.features.movie.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Movie(
     val id: Int,
     val title: String,
@@ -12,21 +15,15 @@ data class Movie(
     val rating: Float = 0.0f,
     val watchLater: Boolean = false
 ) {
-    // URL completa para la imagen del poster
     fun getFullPosterUrl(): String {
         return if (posterPath != null) {
             "https://image.tmdb.org/t/p/w500$posterPath"
-        } else {
-            "" // o una imagen por defecto
-        }
+        } else ""
     }
 
-    // URL completa para la imagen de fondo
     fun getFullBackdropUrl(): String {
         return if (backdropPath != null) {
             "https://image.tmdb.org/t/p/w780$backdropPath"
-        } else {
-            "" // o una imagen por defecto
-        }
+        } else ""
     }
 }

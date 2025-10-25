@@ -14,6 +14,7 @@ plugins {
 
     id("io.sentry.android.gradle") version "5.9.0"
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.kotlinSerialization)
 
 }
 
@@ -110,6 +111,8 @@ dependencies {
     annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
     testImplementation(libs.room.testing)
+//serialization
+    implementation(libs.kotlinx.serialization.json)
 
 
 }
