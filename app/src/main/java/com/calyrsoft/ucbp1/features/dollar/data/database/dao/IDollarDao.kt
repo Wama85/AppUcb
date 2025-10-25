@@ -1,6 +1,5 @@
 package com.calyrsoft.ucbp1.features.dollar.data.database.dao
 
-
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

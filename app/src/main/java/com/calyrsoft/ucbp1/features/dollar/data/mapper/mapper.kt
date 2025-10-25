@@ -5,16 +5,20 @@ import com.calyrsoft.ucbp1.features.dollar.domain.model.DollarModel
 
 fun DollarEntity.toModel() : DollarModel {
     return DollarModel(
-        dollarOfficial = dollarOfficial,
-        dollarParallel = dollarParallel,
+        dollarOfficialCompra = dollarOfficialCompra,
+        dollarOfficialVenta =dollarOfficialVenta,
+        dollarParallelCompra = dollarParallelCompra,
+        dollarParallelVenta=dollarParallelVenta,
         timestamp = timestamp
     )
 }
 
 fun DollarModel.toEntity() : DollarEntity {
     return DollarEntity(
-        dollarOfficial = dollarOfficial,
-        dollarParallel = dollarParallel,
+        dollarOfficialCompra = dollarOfficialCompra,
+        dollarOfficialVenta =dollarOfficialVenta,
+        dollarParallelCompra = dollarParallelCompra,
+        dollarParallelVenta=dollarParallelVenta,
         timestamp = if (timestamp == 0L) System.currentTimeMillis() else timestamp
     )
 }

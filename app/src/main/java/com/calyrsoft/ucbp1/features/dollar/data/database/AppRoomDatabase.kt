@@ -7,21 +7,18 @@ import androidx.room.RoomDatabase
 import com.calyrsoft.ucbp1.features.dollar.data.database.dao.IDollarDao
 import com.calyrsoft.ucbp1.features.dollar.data.database.entity.DollarEntity
 
-@Database(entities = [DollarEntity::class], version = 2)
+@Database(entities = [DollarEntity::class], version = 3)
 abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun dollarDao(): IDollarDao
-
 
     companion object {
         @Volatile
         private var Instance: AppRoomDatabase? = null
 
-
         fun getDatabase(context: Context): AppRoomDatabase {
-            // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, AppRoomDatabase::class.java, "dollar_db")
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                     .also { Instance = it }
             }
