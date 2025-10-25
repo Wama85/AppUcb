@@ -14,24 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -50,6 +34,8 @@ import com.calyrsoft.ucbp1.navigation.AppNavigation
 import com.calyrsoft.ucbp1.navigation.NavigationDrawer
 import com.calyrsoft.ucbp1.navigation.Screen
 import com.google.firebase.FirebaseApp
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -84,13 +70,43 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    MainApp()
-                }
+                RemoteConfigWrapper()
             }
+        }
+    }
+
+    @Composable
+    fun RemoteConfigWrapper() {
+        var isMaintenance by remember { mutableStateOf<Boolean?>(null) }
+
+        LaunchedEffect(Unit) {
+            val remoteConfig = FirebaseRemoteConfig.getInstance()
+            val settings = FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(0)
+                .build()
+            remoteConfig.setConfigSettingsAsync(settings)
+            remoteConfig.setDefaultsAsync(mapOf("mantenimiento" to false))
+
+            remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    remoteConfig.activate()
+                }
+                isMaintenance = remoteConfig.getBoolean("mantenimiento")
+            }
+        }
+
+        when (isMaintenance) {
+            null -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            true -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = "🚧 En mantenimiento 🚧",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            false -> MainApp()
         }
     }
 
@@ -152,6 +168,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
         val isLoginScreen = currentRoute == Screen.Login.route
 
         ModalNavigationDrawer(
