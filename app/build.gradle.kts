@@ -5,17 +5,15 @@ val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
 }
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-
-
     id("io.sentry.android.gradle") version "5.9.0"
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.kotlinSerialization)
-
 }
 
 android {
@@ -56,7 +54,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -83,9 +80,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.retrofit)
-    implementation (libs.koin.android)
-    implementation (libs.koin.androidx.navigation)
-    implementation (libs.koin.androidx.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.navigation)
+    implementation(libs.koin.androidx.compose)
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
     implementation(libs.nav.compose)
@@ -96,32 +93,31 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-    //Firebase
-    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+    // ✅ Firebase (mantiene solo un BOM, la versión más nueva)
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.firebaseui:firebase-ui-auth:9.0.0")
 
+    implementation("com.firebaseui:firebase-ui-auth:9.0.0")
     implementation("com.google.android.gms:play-services-auth:21.4.0")
+    implementation("com.google.firebase:firebase-config-ktx")
+    implementation("com.google.firebase:firebase-common-ktx")
 
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
     implementation(libs.datastore)
     implementation(libs.bundles.local)
     annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
     testImplementation(libs.room.testing)
-//serialization
+
+    // serialization
     implementation(libs.kotlinx.serialization.json)
-
-
 }
 
 sentry {
     org.set("ucb-yl")
     projectName.set("android")
-
-    // this will upload your source code to Sentry to show it as part of the stack traces
-    // disable if you don't want to expose your sources
     includeSourceContext.set(true)
 }

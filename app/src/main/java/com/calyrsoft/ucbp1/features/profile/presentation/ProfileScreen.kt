@@ -75,7 +75,7 @@ fun ProfileScreen(
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
 
                 Text(
@@ -83,7 +83,7 @@ fun ProfileScreen(
                     style = MaterialTheme.typography.headlineMedium
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // ✅ Nombre del perfil (del Profile model)
                 state.profileData?.name?.let { name ->
@@ -121,14 +121,14 @@ fun ProfileScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
                     text = "Esta es la pantalla de perfil. Aquí podrás ver y gestionar tu información personal.",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Botón para ir a la pantalla del dólar
                 Button(
@@ -139,7 +139,7 @@ fun ProfileScreen(
                     Text("Ver Tipo de Cambio")
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Button(
                     onClick = {
@@ -149,7 +149,7 @@ fun ProfileScreen(
                     Text("GitHub")
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Button(
                     onClick = {
@@ -159,7 +159,7 @@ fun ProfileScreen(
                     Text("Ir a Movies")
                 }
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 // ✅ Botón de logout usando el ViewModel con DataStore
                 Button(
